@@ -1,10 +1,35 @@
 import express, { type Request, Response, NextFunction } from "express";
+import session from "express-session";
+import connectPg from "connect-pg-simple";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { storage } from "./storage";
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// Session configuration
+const sessionTtl = 7 * 24 * 60 * 60 * 1000; // 1 week
+const pgStore = connectPg(session);
+const sessionStore = new pgStore({
+  conString: process.env.DATABASE_URL,
+  createTableIfMissing: false,
+  ttl: sessionTtl,
+  tableName: "sessions",
+});
+
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'essia-candle-shop-secret-2024',
+  store: sessionStore,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    secure: false, // set to true in production with HTTPS
+    maxAge: sessionTtl,
+  },
+}));
 
 app.use((req, res, next) => {
   const start = Date.now();
@@ -37,6 +62,9 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Initialize sample products
+  await storage.initializeSampleProducts();
+  
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {

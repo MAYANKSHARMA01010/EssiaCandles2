@@ -1,17 +1,47 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'wouter';
-import { Search, ShoppingCart, Menu, X } from 'lucide-react';
+import { Search, ShoppingCart, Menu, X, User, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useCart } from '@/context/cart-context';
+import { useAuth } from '@/hooks/useAuth';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { apiRequest } from '@/lib/queryClient';
+import { useToast } from '@/hooks/use-toast';
 
 export function Header() {
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const { cartCount } = useCart();
+  const { user, isAuthenticated, isLoading } = useAuth();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const logoutMutation = useMutation({
+    mutationFn: async () => {
+      return await apiRequest("/api/auth/logout", "POST");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/cart"] });
+      toast({
+        title: "Success",
+        description: "Logged out successfully",
+      });
+      setLocation("/");
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Logout failed",
+        variant: "destructive",
+      });
+    },
+  });
 
   const navigation = [
     { name: 'Home', href: '/' },
@@ -93,6 +123,45 @@ export function Header() {
                 </Button>
               )}
             </div>
+
+            {/* Authentication */}
+            {!isLoading && (
+              isAuthenticated ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-purple-dark hover:text-purple-primary"
+                    >
+                      <User className="h-5 w-5" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem disabled>
+                      {user?.firstName} {user?.lastName}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => logoutMutation.mutate()}>
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <div className="flex items-center space-x-2">
+                  <Link href="/login">
+                    <Button variant="ghost" size="sm" className="text-purple-dark hover:text-purple-primary">
+                      Login
+                    </Button>
+                  </Link>
+                  <Link href="/register">
+                    <Button size="sm" className="bg-purple-primary hover:bg-purple-dark text-white">
+                      Sign Up
+                    </Button>
+                  </Link>
+                </div>
+              )
+            )}
 
             {/* Cart */}
             <Link href="/cart">
