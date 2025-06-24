@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { getSessionId } from '@/lib/utils';
@@ -12,6 +12,9 @@ interface CartItem {
 }
 
 interface Product {
+  description: ReactNode;
+  scent: any;
+  image: string | undefined;
   id: number;
   name: string;
   price: string;
