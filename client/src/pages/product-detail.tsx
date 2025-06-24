@@ -11,7 +11,21 @@ import { useCart } from '@/context/cart-context';
 import { formatPrice } from '@/lib/utils';
 import { ArrowLeft, Clock, Package, Leaf } from 'lucide-react';
 import { Link } from 'wouter';
-import type { Product } from '@shared/schema';
+
+// Define the Product type according to your product object structure
+type Product = {
+  id: string;
+  name: string;
+  price: string;
+  image: string;
+  description: string;
+  inStock: boolean;
+  featured?: boolean;
+  scent?: string;
+  size?: string;
+  burnTime?: number;
+  ingredients?: string;
+};
 
 export default function ProductDetail() {
   const [, params] = useRoute('/products/:id');
@@ -30,7 +44,7 @@ export default function ProductDetail() {
     
     setIsAddingToCart(true);
     try {
-      await addToCart(product.id, quantity);
+      await addToCart(Number(product.id), quantity);
       toast({
         title: "Added to Cart",
         description: `${quantity} ${product.name}${quantity > 1 ? 's' : ''} added to your cart.`,

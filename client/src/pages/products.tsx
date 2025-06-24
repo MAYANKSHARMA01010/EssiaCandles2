@@ -7,7 +7,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ProductCard } from '@/components/product-card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Search } from 'lucide-react';
-import type { Product } from '@shared/schema';
+
+// Define the Product type
+type Product = {
+  id: string;
+  name: string;
+  price: string;
+  // Add other fields as needed, e.g. image, description, etc.
+};
 
 export default function Products() {
   const [location] = useLocation();

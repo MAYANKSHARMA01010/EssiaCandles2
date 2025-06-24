@@ -8,7 +8,18 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { registerSchema, type RegisterData } from "@shared/schema";
+import { z } from "zod";
+
+// Define the schema for registration form validation
+export const registerSchema = z.object({
+  email: z.string().email({ message: "Invalid email address" }),
+  password: z.string().min(6, { message: "Password must be at least 6 characters" }),
+  firstName: z.string().min(1, { message: "First name is required" }),
+  lastName: z.string().min(1, { message: "Last name is required" }),
+});
+
+// Infer the TypeScript type from the schema
+export type RegisterData = z.infer<typeof registerSchema>;
 
 export default function Register() {
   const [, setLocation] = useLocation();

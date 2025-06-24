@@ -9,7 +9,14 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { loginSchema, type LoginData } from "@shared/schema";
+import { z } from "zod";
+
+// Define the login schema and LoginData type
+export const loginSchema = z.object({
+  email: z.string().email({ message: "Invalid email address" }),
+  password: z.string().min(6, { message: "Password must be at least 6 characters" }),
+});
+type LoginData = z.infer<typeof loginSchema>;
 
 export default function Login() {
   const [, setLocation] = useLocation();

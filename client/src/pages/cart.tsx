@@ -16,7 +16,7 @@ export default function Cart() {
   const handleQuantityChange = async (cartItemId: number, newQuantity: number) => {
     if (newQuantity < 1) return;
     
-    setUpdatingItems(prev => new Set([...prev, cartItemId]));
+    setUpdatingItems(prev => new Set([...Array.from(prev), cartItemId]));
     try {
       await updateQuantity(cartItemId, newQuantity);
     } catch (error) {

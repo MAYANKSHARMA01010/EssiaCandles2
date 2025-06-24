@@ -5,7 +5,16 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { ProductCard } from '@/components/product-card';
 import { Skeleton } from '@/components/ui/skeleton';
-import type { Product } from '@shared/schema';
+
+// Define the Product type or import it from your models/types
+type Product = {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  image: string;
+  // Add other fields as needed
+};
 
 export default function Home() {
   const { data: featuredProducts, isLoading } = useQuery<Product[]>({

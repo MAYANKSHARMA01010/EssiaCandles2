@@ -8,15 +8,19 @@ interface User {
   lastName: string;
 }
 
+interface AuthResponse {
+  user?: User;
+}
+
 export function useAuth() {
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error } = useQuery<AuthResponse>({
     queryKey: ["/api/auth/me"],
     queryFn: getQueryFn({ on401: "returnNull" }),
     retry: false,
   });
 
   return {
-    user: data?.user as User | undefined,
+    user: data?.user,
     isLoading,
     isAuthenticated: !!data?.user,
     error,

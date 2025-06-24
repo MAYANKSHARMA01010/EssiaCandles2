@@ -5,7 +5,18 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { useCart } from '@/context/cart-context';
 import { formatPrice } from '@/lib/utils';
-import type { Product } from '@shared/schema';
+
+// Define the Product type if not already imported
+interface Product {
+  id: string;
+  name: string;
+  description: string;
+  image: string;
+  price: number;
+  inStock: boolean;
+  featured?: boolean;
+  scent?: string;
+}
 
 interface ProductCardProps {
   product: Product;
@@ -24,7 +35,7 @@ export function ProductCard({ product }: ProductCardProps) {
     
     setIsLoading(true);
     try {
-      await addToCart(product.id);
+      await addToCart(Number(product.id));
       toast({
         title: "Added to Cart",
         description: `${product.name} has been added to your cart.`,
