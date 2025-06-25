@@ -4,16 +4,15 @@ import { useMutation } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { useCart } from '@/context/cart-context';
-import { useToast } from '@/hooks/use-toast';
-import { formatPrice } from '@/lib/utils';
-import { apiRequest } from '@/lib/queryClient';
+import { Button } from '../components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Input } from '../components/ui/input';
+import { Separator } from '../components/ui/separator';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../components/ui/form';
+import { useCart } from '../context/cart-context';
+import { useToast } from '../hooks/use-toast';
+import { formatPrice } from '../lib/utils';
+import { apiRequest } from '../lib/queryClient';
 import { Lock, CreditCard } from 'lucide-react';
 
 const checkoutSchema = z.object({

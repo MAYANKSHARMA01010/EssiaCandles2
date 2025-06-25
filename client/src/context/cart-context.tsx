@@ -1,7 +1,7 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiRequest } from '@/lib/queryClient';
-import { getSessionId } from '@/lib/utils';
+import { apiRequest } from '../lib/queryClient';
+import { getSessionId } from '../lib/utils';
 
 // Define CartItem and Product types if not already imported
 interface CartItem {

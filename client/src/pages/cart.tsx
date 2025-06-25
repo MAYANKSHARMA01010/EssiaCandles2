@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Link } from 'wouter';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { useCart } from '@/context/cart-context';
-import { useToast } from '@/hooks/use-toast';
-import { formatPrice } from '@/lib/utils';
+import { Button } from '../components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Separator } from '../components/ui/separator';
+import { useCart } from '../context/cart-context';
+import { useToast } from '../hooks/use-toast';
+import { formatPrice } from '../lib/utils';
 import { Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
 
 export default function Cart() {

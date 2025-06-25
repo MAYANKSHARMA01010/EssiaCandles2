@@ -1,10 +1,10 @@
 import { Link } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { ProductCard } from '@/components/product-card';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '../components/ui/button';
+import { Card, CardContent } from '../components/ui/card';
+import { Input } from '../components/ui/input';
+import { ProductCard } from '../components/product-card';
+import { Skeleton } from '../components/ui/skeleton';
 
 // Define the Product type or import it from your models/types
 type Product = {
@@ -13,6 +13,9 @@ type Product = {
   description: string;
   price: number;
   image: string;
+  inStock: boolean;
+  featured?: boolean;
+  scent?: string;
   // Add other fields as needed
 };
 

@@ -1,16 +1,16 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'wouter';
 import { Search, ShoppingCart, Menu, X, User, LogOut } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { useCart } from '@/context/cart-context';
-import { useAuth } from '@/hooks/useAuth';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Badge } from './ui/badge';
+import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
+import { useCart } from '../context/cart-context';
+import { useAuth } from '../hooks/useAuth';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiRequest } from '@/lib/queryClient';
-import { useToast } from '@/hooks/use-toast';
+import { apiRequest } from '../lib/queryClient';
+import { useToast } from '../hooks/use-toast';
 
 export function Header() {
   const [location, setLocation] = useLocation();

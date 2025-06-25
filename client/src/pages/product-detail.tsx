@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { useRoute } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useToast } from '@/hooks/use-toast';
-import { useCart } from '@/context/cart-context';
-import { formatPrice } from '@/lib/utils';
+import { Button } from '../components/ui/button';
+import { Badge } from '../components/ui/badge';
+import { Card, CardContent } from '../components/ui/card';
+import { Separator } from '../components/ui/separator';
+import { Skeleton } from '../components/ui/skeleton';
+import { useToast } from '../hooks/use-toast';
+import { useCart } from '../context/cart-context';
+import { formatPrice } from '../lib/utils';
 import { ArrowLeft, Clock, Package, Leaf } from 'lucide-react';
 import { Link } from 'wouter';
 

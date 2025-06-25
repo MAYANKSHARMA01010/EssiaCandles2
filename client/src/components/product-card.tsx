@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Link } from 'wouter';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { useToast } from '@/hooks/use-toast';
-import { useCart } from '@/context/cart-context';
-import { formatPrice } from '@/lib/utils';
+import { Button } from './ui/button';
+import { Badge } from './ui/badge';
+import { useToast } from '../hooks/use-toast';
+import { useCart } from '../context/cart-context';
+import { formatPrice } from '../lib/utils';
 
 // Define the Product type if not already imported
 interface Product {
