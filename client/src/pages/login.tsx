@@ -2,28 +2,14 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link, useLocation } from "wouter";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "../components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "../components/ui/form";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../components/ui/form";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 import { useToast } from "../hooks/use-toast";
 import { apiRequest } from "../lib/queryClient";
 import { z } from "zod";
 
-// ✅ Zod schema for form validation
 export const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
   password: z.string().min(6, { message: "Password must be at least 6 characters" }),
@@ -46,7 +32,7 @@ export default function Login() {
 
   const loginMutation = useMutation({
     mutationFn: async (data: LoginData) => {
-      // ✅ FIXED ORDER: method first, then URL, then body
+      // ✅ Fixed: method comes first, then URL, then data
       return await apiRequest("POST", "/api/users/login", data);
     },
     onSuccess: () => {
@@ -131,7 +117,7 @@ export default function Login() {
             </Form>
             <div className="mt-6 text-center">
               <p className="text-sm text-purple-600 dark:text-purple-300">
-                Don&apos;t have an account?{" "}
+                Don't have an account?{" "}
                 <Link href="/register" className="text-purple-800 hover:text-purple-900 dark:text-purple-200 font-medium">
                   Sign up
                 </Link>

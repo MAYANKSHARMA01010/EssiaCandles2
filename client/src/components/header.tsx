@@ -17,7 +17,16 @@ export function Header() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const { cartCount } = useCart();
-  const { user, isAuthenticated, isLoading } = useAuth();
+  type User = {
+    firstName?: string;
+    lastName?: string;
+    // add other user properties if needed
+  };
+  const { user, isAuthenticated, isLoading } = useAuth() as {
+    user: User | null;
+    isAuthenticated: boolean;
+    isLoading: boolean;
+  };
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
