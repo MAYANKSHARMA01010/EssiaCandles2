@@ -8,29 +8,24 @@ const User = require('../models/user');
 
 // ✅ JWT Auth Middleware
 const authenticate = (req, res, next) => {
-  const authHeader = req.headers.authorization;
+  const token = req.cookies?.token;
 
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+  if (!token) {
     return res.status(401).json({ message: 'Access denied. No token provided.' });
   }
 
-  const token = authHeader.split(' ')[1];
-
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // attach user data to request
+    req.user = decoded; // attach user data
     next();
-  } 
-  catch (err) {
+  } catch (err) {
     return res.status(401).json({ message: 'Invalid or expired token.' });
   }
 };
 
-// 🔐 Signup Route
+// ✅ Signup
 router.post('/signup', async (req, res) => {
   console.log('👉 POST /signup called');
-  console.log('🟡 Request body', req.body);
-
   const { name, email, password } = req.body;
 
   try {
@@ -46,19 +41,16 @@ router.post('/signup', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await User.create({ name, email, password: hashedPassword });
 
-    res.status(201).json({ message: 'User created successfully', user: newUser });
-  } 
-  catch (error) {
+    res.status(201).json({ message: 'User created successfully', user: { id: newUser.id, email: newUser.email, name: newUser.name } });
+  } catch (error) {
     console.error('❌ Signup error:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
 
-// 🔐 Login Route
+// ✅ Login
 router.post('/login', async (req, res) => {
   console.log('👉 POST /login called');
-  console.log('🟡 Request body', req.body);
-
   const { email, password } = req.body;
 
   try {
@@ -67,38 +59,55 @@ router.post('/login', async (req, res) => {
     }
 
     const user = await User.findOne({ where: { email } });
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
+    if (!user) return res.status(404).json({ message: 'User not found' });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(401).json({ message: 'Invalid credentials' });
-    }
+    if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' });
 
     const token = jwt.sign(
       { userId: user.id, email: user.email },
-      process.env.JWT_SECRET || 'default_secret_key',
+      process.env.JWT_SECRET,
       { expiresIn: '1h' }
     );
 
-    res.status(200).json({ message: 'Login successful', token });
-  } 
-  catch (error) {
+    // ✅ Set token as HTTP-only cookie
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 1000 // 1 hour
+    });
+
+    res.status(200).json({ message: 'Login successful' });
+  } catch (error) {
     console.error('❌ Login error:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
 
-// 🔒 Protected Route (requires valid JWT token)
-router.get('/protected', authenticate, (req, res) => {
-  res.status(200).json({
-    message: '✅ You have accessed a protected route!',
-    user: req.user,
-  });
+// ✅ Logout
+router.post('/logout', (req, res) => {
+  res.clearCookie('token');
+  res.status(200).json({ message: 'Logged out successfully' });
 });
 
-// Test route to verify user routes are working
+// ✅ Authenticated user profile (used by useAuth)
+router.get('/me', authenticate, async (req, res) => {
+  try {
+    const user = await User.findByPk(req.user.userId, {
+      attributes: ['id', 'email', 'name'],
+    });
+
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    res.status(200).json({ user });
+  } catch (err) {
+    console.error('❌ Me error:', err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// ✅ Test route
 router.get('/test', (req, res) => {
   res.send('✅ User route working!');
 });

@@ -4,8 +4,7 @@ import { getQueryFn } from "../lib/queryClient";
 interface User {
   id: number;
   email: string;
-  firstName: string;
-  lastName: string;
+  name: string;
 }
 
 interface AuthResponse {
@@ -14,7 +13,7 @@ interface AuthResponse {
 
 export function useAuth() {
   const { data, isLoading, error } = useQuery<AuthResponse>({
-    queryKey: ["/api/auth/me"],
+    queryKey: ["/api/users/me"],
     queryFn: getQueryFn({ on401: "returnNull" }),
     retry: false,
   });

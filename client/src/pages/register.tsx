@@ -2,15 +2,19 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link, useLocation } from "wouter";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../components/ui/form";
+import {
+  Card, CardContent, CardDescription, CardHeader, CardTitle
+} from "../components/ui/card";
+import {
+  Form, FormControl, FormField, FormItem, FormLabel, FormMessage
+} from "../components/ui/form";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 import { useToast } from "../hooks/use-toast";
 import { apiRequest } from "../lib/queryClient";
 import { z } from "zod";
 
-// Define the schema for registration form validation
+// ✅ Schema
 export const registerSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
   password: z.string().min(6, { message: "Password must be at least 6 characters" }),
@@ -18,7 +22,6 @@ export const registerSchema = z.object({
   lastName: z.string().min(1, { message: "Last name is required" }),
 });
 
-// Infer the TypeScript type from the schema
 export type RegisterData = z.infer<typeof registerSchema>;
 
 export default function Register() {
@@ -38,7 +41,12 @@ export default function Register() {
 
   const registerMutation = useMutation({
     mutationFn: async (data: RegisterData) => {
-      return await apiRequest("/api/auth/register", "POST", data);
+      // ✅ Fixed method and URL order
+      return await apiRequest("POST", "/api/users/signup", {
+        name: `${data.firstName} ${data.lastName}`,
+        email: data.email,
+        password: data.password,
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });

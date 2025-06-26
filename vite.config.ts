@@ -46,5 +46,16 @@ export default defineConfig({
       strict: true,
       deny: ["**/.*"],
     },
+    cors: {
+      origin: "http://localhost:5173",
+      credentials: true,
+    },
+    proxy: {
+      "/api": {
+        target: "http://localhost:5002",
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
 });
