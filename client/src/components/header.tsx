@@ -16,7 +16,7 @@ export function Header() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const { cartCount } = useCart();
-  const { user, isAuthenticated, isLoading } = useAuthContext();
+  const { user, isAuthenticated, isLoading, refetchUser } = useAuthContext();
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -24,8 +24,8 @@ export function Header() {
     mutationFn: async () => {
       return await apiRequest("POST", "/api/users/logout");
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
+    onSuccess: async () => {
+      await refetchUser(); // ✅ Trigger context update
       queryClient.invalidateQueries({ queryKey: ["/api/cart"] });
       toast({
         title: "Success",
@@ -171,7 +171,7 @@ export function Header() {
                 {cartCount > 0 && (
                   <Badge
                     variant="destructive"
-                    className="absolute -top-2 -right-2 bg-purple-primary hover:bg-purple-primary text-white text-xs rounded-full h-5 w-5 flex items-center justify-center p-0"
+                    className="absolute -top-2 -right-2 bg-purple-primary text-white text-xs rounded-full h-5 w-5 flex items-center justify-center p-0"
                   >
                     {cartCount}
                   </Badge>

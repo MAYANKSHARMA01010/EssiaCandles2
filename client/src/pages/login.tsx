@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -22,7 +23,7 @@ import { Button } from "../components/ui/button";
 import { useToast } from "../hooks/use-toast";
 import { apiRequest } from "../lib/queryClient";
 import { z } from "zod";
-import { useAuthContext } from "../context/auth-context"; // ✅ ADD THIS
+import { useAuthContext } from "../context/auth-context";
 
 export const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -35,7 +36,7 @@ export default function Login() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { refetchUser } = useAuthContext();
+  const { refetchUser, isAuthenticated } = useAuthContext(); // ✅
 
   const form = useForm<LoginData>({
     resolver: zodResolver(loginSchema),
@@ -50,15 +51,12 @@ export default function Login() {
       return await apiRequest("POST", "/api/users/login", data);
     },
     onSuccess: async () => {
-      await refetchUser(); // ✅ TRIGGER UI UPDATE
+      await refetchUser(); // ✅ update global auth context
       queryClient.invalidateQueries({ queryKey: ["/api/cart"] });
-
       toast({
         title: "Success",
         description: "Logged in successfully",
       });
-
-      setLocation("/");
     },
     onError: (error) => {
       toast({
@@ -68,6 +66,12 @@ export default function Login() {
       });
     },
   });
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      setLocation("/");
+    }
+  }, [isAuthenticated]);
 
   const onSubmit = (data: LoginData) => {
     loginMutation.mutate(data);
@@ -134,7 +138,10 @@ export default function Login() {
             <div className="mt-6 text-center">
               <p className="text-sm text-purple-600 dark:text-purple-300">
                 Don't have an account?{" "}
-                <Link href="/register" className="text-purple-800 hover:text-purple-900 dark:text-purple-200 font-medium">
+                <Link
+                  href="/register"
+                  className="text-purple-800 hover:text-purple-900 dark:text-purple-200 font-medium"
+                >
                   Sign up
                 </Link>
               </p>
