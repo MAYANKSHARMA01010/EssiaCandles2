@@ -17,19 +17,24 @@ export async function apiRequest(
     headers: {
       "Content-Type": "application/json",
     },
-    credentials: "include", // ✅ Ensure cookies are sent
+    credentials: "include",
     body: body ? JSON.stringify(body) : undefined,
   });
 
-  const data = await res.json();
+  const text = await res.text();
 
-  if (!res.ok) {
-    throw new Error(data.message || "Something went wrong");
+  try {
+    const data = JSON.parse(text);
+
+    if (!res.ok) {
+      throw new Error(data.message || "Something went wrong");
+    }
+
+    return data;
+  } catch (e) {
+    throw new Error("Server returned invalid JSON. Possibly a 404 or server crash.");
   }
-
-  return data;
 }
-
 
 type UnauthorizedBehavior = "returnNull" | "throw";
 export const getQueryFn: <T>(options: {

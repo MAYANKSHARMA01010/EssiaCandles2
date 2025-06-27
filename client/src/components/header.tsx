@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'wouter';
-import { Search, ShoppingCart, Menu, X, User, LogOut } from 'lucide-react';
+import { Search, ShoppingCart, Menu, X } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Badge } from './ui/badge';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { useCart } from '../context/cart-context';
 import { useAuth } from '../hooks/useAuth';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -17,13 +16,8 @@ export function Header() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const { cartCount } = useCart();
-  type User = {
-    firstName?: string;
-    lastName?: string;
-    // add other user properties if needed
-  };
   const { user, isAuthenticated, isLoading } = useAuth() as {
-    user: User | null;
+    user: { firstName?: string; lastName?: string } | null;
     isAuthenticated: boolean;
     isLoading: boolean;
   };
@@ -32,7 +26,7 @@ export function Header() {
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
-      return await apiRequest("/api/auth/logout", "POST");
+      return await apiRequest("POST", "/api/users/logout"); // ✅ Correct path
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
@@ -98,7 +92,7 @@ export function Header() {
             </div>
           </div>
 
-          {/* Search and Cart */}
+          {/* Right Side Buttons */}
           <div className="flex items-center space-x-4">
             {/* Search */}
             <div className="relative">
@@ -133,29 +127,27 @@ export function Header() {
               )}
             </div>
 
-            {/* Authentication */}
+            {/* Auth Buttons */}
             {!isLoading && (
               isAuthenticated ? (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
+                <div className="flex items-center space-x-2">
+                  <Link href="/profile">
                     <Button
                       variant="ghost"
-                      size="icon"
+                      size="sm"
                       className="text-purple-dark hover:text-purple-primary"
                     >
-                      <User className="h-5 w-5" />
+                      Profile
                     </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem disabled>
-                      {user?.firstName} {user?.lastName}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => logoutMutation.mutate()}>
-                      <LogOut className="mr-2 h-4 w-4" />
-                      Logout
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                  </Link>
+                  <Button
+                    size="sm"
+                    className="bg-purple-primary hover:bg-purple-dark text-white"
+                    onClick={() => logoutMutation.mutate()}
+                  >
+                    Logout
+                  </Button>
+                </div>
               ) : (
                 <div className="flex items-center space-x-2">
                   <Link href="/login">
@@ -191,7 +183,7 @@ export function Header() {
               </Button>
             </Link>
 
-            {/* Mobile menu */}
+            {/* Mobile Menu */}
             <Sheet>
               <SheetTrigger asChild>
                 <Button
