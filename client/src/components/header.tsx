@@ -6,7 +6,7 @@ import { Input } from './ui/input';
 import { Badge } from './ui/badge';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 import { useCart } from '../context/cart-context';
-import { useAuth } from '../hooks/useAuth';
+import { useAuthContext } from '../context/auth-context';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '../lib/queryClient';
 import { useToast } from '../hooks/use-toast';
@@ -16,17 +16,13 @@ export function Header() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const { cartCount } = useCart();
-  const { user, isAuthenticated, isLoading } = useAuth() as {
-    user: { firstName?: string; lastName?: string } | null;
-    isAuthenticated: boolean;
-    isLoading: boolean;
-  };
+  const { user, isAuthenticated, isLoading } = useAuthContext();
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
-      return await apiRequest("POST", "/api/users/logout"); // ✅ Correct path
+      return await apiRequest("POST", "/api/users/logout");
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });

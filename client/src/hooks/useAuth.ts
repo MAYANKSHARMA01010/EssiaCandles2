@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { apiRequest } from "../lib/queryClient";
 
 export const useAuth = () => {
@@ -6,22 +6,23 @@ export const useAuth = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await apiRequest("GET", "/api/users/me");
-        setUser(response.user);
-        setIsAuthenticated(true);
-      } catch (err) {
-        setUser(null);
-        setIsAuthenticated(false);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchUser();
+  const fetchUser = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const response = await apiRequest("GET", "/api/users/me");
+      setUser(response.user);
+      setIsAuthenticated(true);
+    } catch (err) {
+      setUser(null);
+      setIsAuthenticated(false);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
-  return { user, isAuthenticated, isLoading };
+  useEffect(() => {
+    fetchUser();
+  }, [fetchUser]);
+
+  return { user, isAuthenticated, isLoading, refetchUser: fetchUser };
 };
