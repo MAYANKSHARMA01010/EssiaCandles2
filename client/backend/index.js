@@ -1,24 +1,29 @@
 const express = require('express');
 const cors = require('cors');
-const cookieParser = require('cookie-parser'); // ✅ required for reading cookies
+const cookieParser = require('cookie-parser');
 const sequelize = require('./config/database');
 const userRoutes = require('./routes/userRoutes');
 
 const app = express();
 const PORT = 5002;
 
-// ✅ Middleware
+// ✅ CORS Configuration
 app.use(cors({
-  origin: 'http://localhost:5173', // ✅ frontend origin (adjust if needed)
-  credentials: true,               // ✅ allow credentials (cookies) to be sent
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  origin: 'http://localhost:5173',        // Frontend origin
+  credentials: true,                      // Allow cookies
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Include OPTIONS
   allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 200               // For legacy browsers
 }));
 
-app.use(express.json());
-app.use(cookieParser()); // ✅ enable cookie parsing
+// ✅ Preflight OPTIONS handler (recommended for full compatibility)
+app.options('*', cors());
 
-// ✅ API routes
+// ✅ Middleware
+app.use(express.json());
+app.use(cookieParser());
+
+// ✅ API Routes
 app.use('/api/users', userRoutes);
 
 // ✅ Home route
@@ -31,7 +36,7 @@ app.all('/', (req, res) => {
   res.status(403).json({ message: '🚫 Forbidden: You are not allowed to access this route using this method' });
 });
 
-// ✅ Start server
+// ✅ Start Server
 (async () => {
   try {
     await sequelize.authenticate();
@@ -43,6 +48,6 @@ app.all('/', (req, res) => {
       console.log(`🚀 Server is running at http://localhost:${PORT}`);
     });
   } catch (error) {
-    console.error('& Sequelize DB connection error:', error);
+    console.error('❌ Sequelize DB connection error:', error);
   }
 })();

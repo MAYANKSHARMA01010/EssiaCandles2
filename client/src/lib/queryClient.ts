@@ -10,18 +10,26 @@ async function throwIfResNotOk(res: Response) {
 export async function apiRequest(
   method: string,
   url: string,
-  data?: unknown,
+  body?: any
 ): Promise<any> {
-  const res = await fetch(url, {
+  const res = await fetch(`http://localhost:5002${url}`, {
     method,
-    headers: data ? { "Content-Type": "application/json" } : {},
-    body: data ? JSON.stringify(data) : undefined,
-    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include", // ✅ Ensure cookies are sent
+    body: body ? JSON.stringify(body) : undefined,
   });
 
-  await throwIfResNotOk(res);
-  return res.json(); // ✅ auto-parse JSON response
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.message || "Something went wrong");
+  }
+
+  return data;
 }
+
 
 type UnauthorizedBehavior = "returnNull" | "throw";
 export const getQueryFn: <T>(options: {

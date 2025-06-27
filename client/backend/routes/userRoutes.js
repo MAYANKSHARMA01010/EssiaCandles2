@@ -22,7 +22,6 @@ const authenticate = (req, res, next) => {
     return res.status(401).json({ message: 'Invalid or expired token.' });
   }
 };
-
 // ✅ Signup
 router.post('/signup', async (req, res) => {
   console.log('👉 POST /signup called');
@@ -41,7 +40,14 @@ router.post('/signup', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await User.create({ name, email, password: hashedPassword });
 
-    res.status(201).json({ message: 'User created successfully', user: { id: newUser.id, email: newUser.email, name: newUser.name } });
+    res.status(201).json({
+      message: 'User created successfully',
+      user: {
+        id: newUser.id,
+        email: newUser.email,
+        name: newUser.name,
+      },
+    });
   } catch (error) {
     console.error('❌ Signup error:', error);
     res.status(500).json({ message: 'Internal server error' });
@@ -70,12 +76,11 @@ router.post('/login', async (req, res) => {
       { expiresIn: '1h' }
     );
 
-    // ✅ Set token as HTTP-only cookie
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 60 * 60 * 1000 // 1 hour
+      maxAge: 60 * 60 * 1000,
     });
 
     res.status(200).json({ message: 'Login successful' });
@@ -84,6 +89,7 @@ router.post('/login', async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
 
 // ✅ Logout
 router.post('/logout', (req, res) => {

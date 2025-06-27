@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { apiRequest } from "../lib/queryClient";
 
 export const useAuth = () => {
   const [user, setUser] = useState(null);
@@ -6,31 +7,21 @@ export const useAuth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const rawUser = localStorage.getItem("user");
-    const userData = rawUser && rawUser !== "undefined" ? JSON.parse(rawUser) : null;
+    const fetchUser = async () => {
+      try {
+        const response = await apiRequest("GET", "/api/users/me");
+        setUser(response.user);
+        setIsAuthenticated(true);
+      } catch (err) {
+        setUser(null);
+        setIsAuthenticated(false);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-    if (token && userData) {
-      setUser(userData);
-      setIsAuthenticated(true);
-    }
-
-    setIsLoading(false);
+    fetchUser();
   }, []);
 
-  const login = (token: string, user: any) => {
-    localStorage.setItem("token", token);
-    localStorage.setItem("user", JSON.stringify(user));
-    setUser(user);
-    setIsAuthenticated(true);
-  };
-
-  const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    setUser(null);
-    setIsAuthenticated(false);
-  };
-
-  return { user, isAuthenticated, isLoading, login, logout };
+  return { user, isAuthenticated, isLoading };
 };
